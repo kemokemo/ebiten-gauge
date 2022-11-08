@@ -3,7 +3,7 @@
 This is a package for displaying a simple gauge.  
 It is intended to be used in games that use [ebiten](https://ebiten.org/).
 
-// todo: sample image
+![sample](media/sample.png)
 
 ## How to use
 
