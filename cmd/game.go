@@ -6,6 +6,7 @@ import (
 	"image"
 	"log"
 
+	"image/color"
 	_ "image/png" // to load png images
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -19,7 +20,9 @@ const (
 )
 
 func NewGame() *Game {
-	gauge := gauge.NewGauge(50, 50, 100)
+	gaugeMax := gauge.NewGauge(50, 50, 100)
+	gaugeZero := gauge.NewGaugeWithColor(50, 113, 100, color.RGBA{R: 80, G: 80, B: 80, A: 255})
+	gaugeZero.SetBlink(false)
 
 	img, _, err := image.Decode(bytes.NewReader(bk_png))
 	if err != nil {
@@ -27,18 +30,23 @@ func NewGame() *Game {
 	}
 	bkImage := ebiten.NewImageFromImage(img)
 
-	return &Game{gauge: gauge, bk: bkImage}
+	return &Game{gaugeMax: gaugeMax, gaugeZero: gaugeZero, bk: bkImage, counterForZero: 100}
 }
 
 type Game struct {
-	gauge   *gauge.Gauge
-	counter int
-	bk      *ebiten.Image
+	gaugeMax       *gauge.Gauge
+	gaugeZero      *gauge.Gauge
+	counter        int
+	counterForZero int
+	bk             *ebiten.Image
 }
 
 func (g *Game) Update() error {
 	g.counter++
-	g.gauge.Update(float64(g.counter))
+	g.gaugeMax.Update(float64(g.counter))
+
+	g.counterForZero--
+	g.gaugeZero.Update(float64(g.counterForZero))
 
 	return nil
 }
@@ -46,7 +54,8 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.bk, &ebiten.DrawImageOptions{})
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Counter: %v", g.counter))
-	g.gauge.Draw(screen)
+	g.gaugeMax.Draw(screen)
+	g.gaugeZero.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
