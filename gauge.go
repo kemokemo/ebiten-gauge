@@ -14,6 +14,7 @@ type Gauge struct {
 	dotOp    []*blinkingOp
 	interval int
 	counter  int
+	bType    BlinkingType
 }
 
 const (
@@ -53,7 +54,11 @@ func NewGaugeWithColor(x, y int, max float64, dotClr color.Color) *Gauge {
 		ops = append(ops, bOp)
 	}
 
-	return &Gauge{x: x, y: y, max: max, dotOp: ops, dot: dot, interval: 2}
+	return &Gauge{x: x, y: y, max: max, dotOp: ops, dot: dot, interval: 2, bType: BlinkingOnMax}
+}
+
+func (g *Gauge) SetBlinkingType(bType BlinkingType) {
+	g.bType = bType
 }
 
 // Update updates the gauge appearance with the v value of arg.
@@ -64,10 +69,20 @@ func (g *Gauge) Update(v float64) {
 		g.counter = 0
 	}
 
-	if g.percent >= 100.0 && g.counter >= g.interval {
+	if g.isBlinkUpdate() {
 		for index := 0; index < len(g.dotOp); index++ {
 			g.dotOp[index].update()
 		}
+	}
+}
+
+func (g *Gauge) isBlinkUpdate() bool {
+	if g.bType == BlinkingOnMax {
+		return g.percent >= 100 && g.counter >= g.interval
+	} else if g.bType == BlinkingOnZero {
+		return g.percent <= 0 && g.counter >= g.interval
+	} else {
+		return false
 	}
 }
 
