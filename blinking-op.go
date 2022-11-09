@@ -36,3 +36,11 @@ func (b *blinkingOp) update() {
 	b.Op.ColorM.Reset()
 	b.Op.ColorM.Scale(1.0, 1.0, 1.0, b.alpha)
 }
+
+func (b *blinkingOp) clear() {
+	b.alpha = 1.0
+	b.counter = 10
+	b.increasing = false
+	b.Op.ColorM.Reset()
+	b.Op.ColorM.Scale(1.0, 1.0, 1.0, b.alpha)
+}
