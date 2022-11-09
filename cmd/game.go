@@ -30,11 +30,13 @@ func NewGame() *Game {
 	}
 	bkImage := ebiten.NewImageFromImage(img)
 
-	return &Game{gaugeMax: gaugeMax, gaugeZero: gaugeZero, bk: bkImage, counterForZero: 100}
+	return &Game{gaugeMax: gaugeMax, gaugeZero: gaugeZero, bk: bkImage, counterForZero: 100, increasing: true, decreasing: true}
 }
 
 type Game struct {
 	gaugeMax       *gauge.Gauge
+	increasing     bool
+	decreasing     bool
 	gaugeZero      *gauge.Gauge
 	counter        int
 	counterForZero int
@@ -42,10 +44,34 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	g.counter++
+	if g.counter > 150 && g.increasing {
+		g.increasing = false
+	} else if g.counter < -50 && !g.increasing {
+		g.increasing = true
+	} else {
+		// keep flag
+	}
+
+	if g.counterForZero < -50 && g.decreasing {
+		g.decreasing = false
+	} else if g.counterForZero > 150 && !g.decreasing {
+		g.decreasing = true
+	} else {
+		// keep flag
+	}
+
+	if g.increasing {
+		g.counter++
+	} else {
+		g.counter--
+	}
 	g.gaugeMax.Update(float64(g.counter))
 
-	g.counterForZero--
+	if g.decreasing {
+		g.counterForZero--
+	} else {
+		g.counterForZero++
+	}
 	g.gaugeZero.Update(float64(g.counterForZero))
 
 	return nil

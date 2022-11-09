@@ -7,14 +7,16 @@ import (
 )
 
 type Gauge struct {
-	x, y     int
-	max      float64
-	percent  float64
-	dot      *ebiten.Image
-	dotOp    []*blinkingOp
-	interval int
-	counter  int
-	blink    bool
+	x, y          int
+	max           float64
+	percent       float64
+	prevPercent   float64
+	dot           *ebiten.Image
+	dotOp         []*blinkingOp
+	interval      int
+	counter       int
+	blink         bool
+	blinkFinished bool
 }
 
 const (
@@ -63,7 +65,15 @@ func (g *Gauge) SetBlink(blink bool) {
 
 // Update updates the gauge appearance with the v value of arg.
 func (g *Gauge) Update(v float64) {
+	g.prevPercent = g.percent
 	g.percent = v / g.max * 100
+
+	if g.prevPercent >= 100 && g.percent < 100 {
+		g.blinkFinished = true
+	} else {
+		g.blinkFinished = false
+	}
+
 	g.counter++
 	if g.counter > g.interval {
 		g.counter = 0
@@ -78,6 +88,12 @@ func (g *Gauge) blinkUpdate() {
 	if g.percent >= 100 && g.counter >= g.interval {
 		for index := 0; index < len(g.dotOp); index++ {
 			g.dotOp[index].update()
+		}
+	}
+
+	if g.blinkFinished {
+		for index := 0; index < len(g.dotOp); index++ {
+			g.dotOp[index].clear()
 		}
 	}
 }
