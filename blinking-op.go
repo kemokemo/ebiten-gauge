@@ -4,14 +4,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-func newBlinkingOp(x, y float64) *blinkingOp {
+func NewBlinkingOp() *BlinkingOp {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(x, y)
 	op.ColorM.Scale(1.0, 1.0, 1.0, 1.0)
-	return &blinkingOp{Op: op, increasing: false, alpha: 1.0, counter: 10}
+	return &BlinkingOp{Op: op, increasing: false, alpha: 1.0, counter: 10}
 }
 
-type blinkingOp struct {
+type BlinkingOp struct {
 	Op *ebiten.DrawImageOptions
 
 	alpha      float64
@@ -19,7 +18,7 @@ type blinkingOp struct {
 	increasing bool
 }
 
-func (b *blinkingOp) update() {
+func (b *BlinkingOp) Update() {
 	if b.increasing && b.counter < 10 {
 		b.counter++
 	} else if b.increasing && b.counter == 10 {
@@ -37,7 +36,7 @@ func (b *blinkingOp) update() {
 	b.Op.ColorM.Scale(1.0, 1.0, 1.0, b.alpha)
 }
 
-func (b *blinkingOp) clear() {
+func (b *BlinkingOp) Clear() {
 	b.alpha = 1.0
 	b.counter = 10
 	b.increasing = false
