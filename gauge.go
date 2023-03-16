@@ -12,7 +12,7 @@ type Gauge struct {
 	percent       float64
 	prevPercent   float64
 	dot           *ebiten.Image
-	dotOp         []*blinkingOp
+	dotOp         []*BlinkingOp
 	interval      int
 	counter       int
 	blink         bool
@@ -50,9 +50,10 @@ func NewGaugeWithColor(x, y int, max float64, dotClr color.Color) *Gauge {
 	dot := ebiten.NewImage(w, h)
 	dot.Fill(dotClr)
 
-	ops := []*blinkingOp{}
+	ops := []*BlinkingOp{}
 	for i := 0; i < dotNum; i++ {
-		bOp := newBlinkingOp(float64(firstOffset+x+(w+xInterval)*i), float64(y+yInterval))
+		bOp := NewBlinkingOp()
+		bOp.Op.GeoM.Translate(float64(firstOffset+x+(w+xInterval)*i), float64(y+yInterval))
 		ops = append(ops, bOp)
 	}
 
@@ -87,13 +88,13 @@ func (g *Gauge) Update(v float64) {
 func (g *Gauge) blinkUpdate() {
 	if g.percent >= 100 && g.counter >= g.interval {
 		for index := 0; index < len(g.dotOp); index++ {
-			g.dotOp[index].update()
+			g.dotOp[index].Update()
 		}
 	}
 
 	if g.blinkFinished {
 		for index := 0; index < len(g.dotOp); index++ {
-			g.dotOp[index].clear()
+			g.dotOp[index].Clear()
 		}
 	}
 }
