@@ -21,6 +21,7 @@ const (
 
 func NewGame() *Game {
 	gaugeMax := gauge.NewGauge(50, 50, 100)
+	gaugeMax.SetBlinkInterval(5)
 	gaugeZero := gauge.NewGaugeWithColor(50, 113, 100, color.RGBA{R: 80, G: 80, B: 80, A: 255})
 	gaugeZero.SetBlink(false)
 
