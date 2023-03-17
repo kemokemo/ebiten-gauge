@@ -64,6 +64,12 @@ func (g *Gauge) SetBlink(blink bool) {
 	g.blink = blink
 }
 
+func (g *Gauge) SetBlinkInterval(interval int) {
+	for index := 0; index < len(g.dotOp); index++ {
+		g.dotOp[index].SetInterval(interval)
+	}
+}
+
 // Update updates the gauge appearance with the v value of arg.
 func (g *Gauge) Update(v float64) {
 	g.prevPercent = g.percent
