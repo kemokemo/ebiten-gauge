@@ -23,6 +23,10 @@ gauge1 := gauge.NewGauge(x, y, max)
 // you can use NewGaugeWithColor function
 // 
 gaugeGray := gauge.NewGaugeWithColor(x, y, max, color.RGBA{R: 80, G: 80, B: 80, A: 255})
+
+// If you want to specify scale for gauge,
+// you can use NewGaugeWithScale function
+// gaugeGray := gauge.NewGaugeWithScale(x, y, max, color.RGBA{R: 80, G: 80, B: 80, A: 255}, 2.0)
 ```
 
 In standard operation, the dot of gauge blinks when the current value reaches the MAX value. Blinking can be turned off for gauges that do not require blinking or are mainly used for decreasing values.
