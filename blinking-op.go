@@ -8,7 +8,7 @@ const defaultInterval = 10
 
 func NewBlinkingOp() *BlinkingOp {
 	op := &ebiten.DrawImageOptions{}
-	op.ColorM.Scale(1.0, 1.0, 1.0, 1.0)
+	op.ColorScale.Scale(1.0, 1.0, 1.0, 1.0)
 	return &BlinkingOp{Op: op, increasing: false, alpha: 1.0, counter: defaultInterval, interval: defaultInterval}
 }
 
@@ -19,7 +19,7 @@ func NewBlinkingOp() *BlinkingOp {
 type BlinkingOp struct {
 	Op *ebiten.DrawImageOptions
 
-	alpha      float64
+	alpha      float32
 	counter    int
 	interval   int
 	increasing bool
@@ -44,10 +44,10 @@ func (b *BlinkingOp) Update() {
 		b.increasing = true
 		b.counter++
 	}
-	b.alpha = 0.1 * float64(b.counter)
+	b.alpha = 0.1 * float32(b.counter)
 
-	b.Op.ColorM.Reset()
-	b.Op.ColorM.Scale(1.0, 1.0, 1.0, b.alpha)
+	b.Op.ColorScale.Reset()
+	b.Op.ColorScale.Scale(1.0*b.alpha, 1.0*b.alpha, 1.0*b.alpha, b.alpha)
 }
 
 // Clear clears internal values except the interval value.
@@ -56,6 +56,6 @@ func (b *BlinkingOp) Clear() {
 	b.alpha = 1.0
 	b.counter = defaultInterval
 	b.increasing = false
-	b.Op.ColorM.Reset()
-	b.Op.ColorM.Scale(1.0, 1.0, 1.0, b.alpha)
+	b.Op.ColorScale.Reset()
+	b.Op.ColorScale.Scale(1.0*b.alpha, 1.0*b.alpha, 1.0*b.alpha, b.alpha)
 }
