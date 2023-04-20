@@ -25,6 +25,10 @@ type BlinkingOp struct {
 	increasing bool
 }
 
+func (b *BlinkingOp) SetScale(sx, sy float64) {
+	b.Op.GeoM.Scale(sx, sy)
+}
+
 // SetInterval sets the interval of blinking.
 // Larger values will cause it to blink more slowly.
 func (b *BlinkingOp) SetInterval(interval int) {

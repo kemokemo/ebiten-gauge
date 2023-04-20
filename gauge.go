@@ -47,17 +47,31 @@ func NewGauge(x, y int, max float64) *Gauge {
 //	dotClr: dot's color
 //	bkClr: background color
 func NewGaugeWithColor(x, y int, max float64, dotClr color.Color) *Gauge {
-	dot := ebiten.NewImage(w, h)
+	return NewGaugeWithScale(x, y, max, dotClr, 1.0)
+}
+
+func NewGaugeWithScale(x, y int, max float64, dotClr color.Color, scale float64) *Gauge {
+	imgW := int(w * scale)
+	imgH := int(h * scale)
+	dot := ebiten.NewImage(imgW, imgH)
 	dot.Fill(dotClr)
 
 	ops := []*BlinkingOp{}
 	for i := 0; i < dotNum; i++ {
 		bOp := NewBlinkingOp()
-		bOp.Op.GeoM.Translate(float64(firstOffset+x+(w+xInterval)*i), float64(y+yInterval))
+		bOp.Op.GeoM.Translate(float64(firstOffset+x+(imgW+xInterval)*i), float64(y+yInterval))
 		ops = append(ops, bOp)
 	}
 
 	return &Gauge{x: x, y: y, max: max, dotOp: ops, dot: dot, interval: 2, blink: true}
+}
+
+func (g *Gauge) SetScale(sx, sy float64) {
+	/*
+		for index := 0; index < len(g.dotOp); index++ {
+			g.dotOp[index].SetScale(sx, sy)
+		}
+	*/
 }
 
 func (g *Gauge) SetBlink(blink bool) {

@@ -22,6 +22,7 @@ const (
 func NewGame() *Game {
 	gaugeMax := gauge.NewGauge(50, 50, 100)
 	gaugeMax.SetBlinkInterval(5)
+	gaugeMaxSize2 := gauge.NewGaugeWithScale(250, 50, 100, color.RGBA{R: 29, G: 87, B: 199, A: 255}, 2.0)
 	gaugeZero := gauge.NewGaugeWithColor(50, 113, 100, color.RGBA{R: 80, G: 80, B: 80, A: 255})
 	gaugeZero.SetBlink(false)
 
@@ -31,11 +32,12 @@ func NewGame() *Game {
 	}
 	bkImage := ebiten.NewImageFromImage(img)
 
-	return &Game{gaugeMax: gaugeMax, gaugeZero: gaugeZero, bk: bkImage, counterForZero: 100, increasing: true, decreasing: true}
+	return &Game{gaugeMax: gaugeMax, gaugeMaxSize2: gaugeMaxSize2, gaugeZero: gaugeZero, bk: bkImage, counterForZero: 100, increasing: true, decreasing: true}
 }
 
 type Game struct {
 	gaugeMax       *gauge.Gauge
+	gaugeMaxSize2  *gauge.Gauge
 	increasing     bool
 	decreasing     bool
 	gaugeZero      *gauge.Gauge
@@ -67,6 +69,7 @@ func (g *Game) Update() error {
 		g.counter--
 	}
 	g.gaugeMax.Update(float64(g.counter))
+	g.gaugeMaxSize2.Update(float64(g.counter))
 
 	if g.decreasing {
 		g.counterForZero--
@@ -82,6 +85,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.bk, &ebiten.DrawImageOptions{})
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Counter: %v", g.counter))
 	g.gaugeMax.Draw(screen)
+	g.gaugeMaxSize2.Draw(screen)
 	g.gaugeZero.Draw(screen)
 }
 
