@@ -1,14 +1,16 @@
 package gauge
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const defaultInterval = 10
 
-func NewBlinkingOp() *BlinkingOp {
+func NewBlinkingOp(dotClr color.Color) *BlinkingOp {
 	op := &ebiten.DrawImageOptions{}
-	op.ColorScale.Scale(1.0, 1.0, 1.0, 1.0)
+	op.ColorScale.ScaleWithColor(dotClr)
 	return &BlinkingOp{Op: op, increasing: false, alpha: 1.0, counter: defaultInterval, interval: defaultInterval}
 }
 
@@ -46,8 +48,7 @@ func (b *BlinkingOp) Update() {
 	}
 	b.alpha = 0.1 * float32(b.counter)
 
-	b.Op.ColorScale.Reset()
-	b.Op.ColorScale.Scale(1.0*b.alpha, 1.0*b.alpha, 1.0*b.alpha, b.alpha)
+	b.Op.ColorScale.SetA(b.alpha)
 }
 
 // Clear clears internal values except the interval value.
@@ -56,6 +57,5 @@ func (b *BlinkingOp) Clear() {
 	b.alpha = 1.0
 	b.counter = defaultInterval
 	b.increasing = false
-	b.Op.ColorScale.Reset()
-	b.Op.ColorScale.Scale(1.0*b.alpha, 1.0*b.alpha, 1.0*b.alpha, b.alpha)
+	b.Op.ColorScale.SetA(b.alpha)
 }

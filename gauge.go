@@ -56,7 +56,7 @@ func NewGaugeWithScale(x, y int, max float64, dotClr color.Color, scale float64)
 
 	ops := []*BlinkingOp{}
 	for i := 0; i < dotNum; i++ {
-		bOp := NewBlinkingOp()
+		bOp := NewBlinkingOp(dotClr)
 		bOp.Op.GeoM.Scale(scale, scale)
 		bOp.Op.GeoM.Translate(float64(firstOffset+x+(imgW+xInterval)*i), float64(y+yInterval))
 		ops = append(ops, bOp)
