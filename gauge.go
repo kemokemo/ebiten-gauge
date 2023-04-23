@@ -11,7 +11,8 @@ type Gauge struct {
 	max           float64
 	percent       float64
 	prevPercent   float64
-	dot           *ebiten.Image
+	dotFilled     *ebiten.Image
+	dotEmpty      *ebiten.Image
 	dotOp         []*BlinkingOp
 	interval      int
 	counter       int
@@ -21,7 +22,7 @@ type Gauge struct {
 
 const (
 	w           = 5
-	h           = 10
+	h           = 11
 	dotNum      = 10
 	xInterval   = 3
 	yInterval   = 5
@@ -52,26 +53,16 @@ func NewGaugeWithColor(x, y int, max float64, dotClr color.Color) *Gauge {
 
 func NewGaugeWithScale(x, y int, max float64, dotClr color.Color, scale float64) *Gauge {
 	imgW := int(w * scale)
-	imgH := int(h * scale)
-	dot := ebiten.NewImage(imgW, imgH)
-	dot.Fill(dotClr)
 
 	ops := []*BlinkingOp{}
 	for i := 0; i < dotNum; i++ {
 		bOp := NewBlinkingOp()
+		bOp.Op.GeoM.Scale(scale, scale)
 		bOp.Op.GeoM.Translate(float64(firstOffset+x+(imgW+xInterval)*i), float64(y+yInterval))
 		ops = append(ops, bOp)
 	}
 
-	return &Gauge{x: x, y: y, max: max, dotOp: ops, dot: dot, interval: 2, blink: true}
-}
-
-func (g *Gauge) SetScale(sx, sy float64) {
-	/*
-		for index := 0; index < len(g.dotOp); index++ {
-			g.dotOp[index].SetScale(sx, sy)
-		}
-	*/
+	return &Gauge{x: x, y: y, max: max, dotOp: ops, dotFilled: dotFilled, dotEmpty: dotEmpty, interval: 2, blink: true}
 }
 
 func (g *Gauge) SetBlink(blink bool) {
@@ -122,7 +113,9 @@ func (g *Gauge) blinkUpdate() {
 func (g *Gauge) Draw(screen *ebiten.Image) {
 	for index := 0; index < len(g.dotOp); index++ {
 		if g.percent > float64((10 * index)) {
-			screen.DrawImage(g.dot, g.dotOp[index].Op)
+			screen.DrawImage(g.dotFilled, g.dotOp[index].Op)
+		} else {
+			screen.DrawImage(g.dotEmpty, g.dotOp[index].Op)
 		}
 	}
 }
